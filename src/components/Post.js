@@ -15,7 +15,7 @@ import imagePlaceholder from '../assets/image-placeholder.png';
 const useStyles = makeStyles({
   post: {
     width: 275,
-    marginBottom: 10,
+    margin: 10,
     borderWidth: 0,
   },
   cardHeaderRoot: {
