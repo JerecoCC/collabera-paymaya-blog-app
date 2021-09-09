@@ -78,7 +78,7 @@ const Post = (props) => {
         <CardActionArea onClick={handleClick}>
           <CardContent>
             <Typography
-              variant="h5"
+              variant="h6"
               align="left"
               className={classes.title}
               gutterBottom

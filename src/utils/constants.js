@@ -4,3 +4,7 @@ export const DIALOGS = {
   DELETE_POST: "delete_post_dialog",
   VIEW_POST: "view_post_dialog",
 };
+export const SORT_BY = {
+  DATE_CREATED: "dateCreated",
+  TITLE: "title",
+};

@@ -11,3 +11,17 @@ export const shouldUpdateList = (shouldUpdate) => {
     payload: shouldUpdate,
   };
 };
+
+export const setSortBy = (sortBy) => {
+  return {
+    type: "post/setSortBy",
+    payload: sortBy,
+  };
+};
+
+export const setKeyword = (keyword) => {
+  return {
+    type: "post/setKeyword",
+    payload: keyword,
+  };
+};
