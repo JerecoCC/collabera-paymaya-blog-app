@@ -1,36 +1,29 @@
 import { Button, Icon } from '@material-ui/core';
-import React, { useState } from 'react';
-import CreatePostDialog from './components/CreatePostDialog';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import Dialogs from './components/Dialogs';
 import PostList from './components/PostList';
+import { openDialog } from './redux/actions/dialogAction';
 import './styles/App.css';
+import { DIALOGS } from './utils/constants';
 
 const App = () => {
-  const [isOpen, setOpen] = useState(false);
-  const [shouldUpdate, toggleUpdate] = useState(false);
-
-  const handleClose = (update = false) => {
-    setOpen(false);
-    toggleUpdate(update);
-  }
+  const dispatch = useDispatch();
 
   return (
     <div className="App">
       <Button
-        variant="outlined"
+        variant="contained"
         color="primary"
         startIcon={<Icon>add</Icon>}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          dispatch(openDialog(DIALOGS.CREATE_POST));
+        }}
       >
         Create Post
       </Button>
-      <CreatePostDialog
-        open={isOpen}
-        onClose={handleClose}
-      />
-      <PostList
-        shouldUpdate={shouldUpdate}
-        toggleUpdate={toggleUpdate}
-      />
+      <Dialogs />
+      <PostList />
     </div>
   );
 }

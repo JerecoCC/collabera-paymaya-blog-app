@@ -1,5 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { shouldUpdateList } from '../redux/actions/postAction';
 import { BASE_URI } from '../utils/constants';
 import Post from './Post';
 
@@ -20,12 +22,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const PostList = (props) => {
+const PostList = () => {
   const [posts, setPosts] = useState([]);
-  const {
-    shouldUpdate,
-    toggleUpdate,
-  } = props;
+  const shouldUpdate = useSelector(state => state.post.updateList);
+  const dispatch = useDispatch();
   const classes = useStyles();
 
   useEffect(() => {
@@ -43,13 +43,13 @@ const PostList = (props) => {
   const getPosts = () => {
     fetch(`${BASE_URI}/post`)
       .then(res => res.json())
-      .then(res => setPosts(res));
-    toggleUpdate(false);
-  }
-
-  const deletePost = (id) => {
-    fetch(`${BASE_URI}/post/${id}`, {method: "DELETE"})
-      .then(res => toggleUpdate(true));
+      .then(res => {
+        dispatch(shouldUpdateList(false));
+        setPosts(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   return (
@@ -58,7 +58,6 @@ const PostList = (props) => {
         <Post
           key={index}
           data={item}
-          onDelete={deletePost}
         />
       ))}
     </div>

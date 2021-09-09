@@ -2,7 +2,6 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  CardHeader,
   CardMedia,
   Icon,
   IconButton,
@@ -10,16 +9,23 @@ import {
   Typography
 } from '@material-ui/core';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import imagePlaceholder from '../assets/image-placeholder.png';
+import { openDialog } from '../redux/actions/dialogAction';
+import { setSelected } from '../redux/actions/postAction';
+import { DIALOGS } from '../utils/constants';
 
 const useStyles = makeStyles({
   post: {
     width: 275,
     margin: 10,
-    borderWidth: 0,
   },
-  cardHeaderRoot: {
-    justifyContent: "space-between",
+  actions: {
+    display: 'flex',
+    alignContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 5,
   },
   media: {
     height: 140
@@ -35,30 +41,30 @@ const useStyles = makeStyles({
 const Post = (props) => {
   const {
     data,
-    onDelete,
   } = props;
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const handleDeleteClick = () => {
+    dispatch(setSelected(data._id));
+    dispatch(openDialog(DIALOGS.DELETE_POST));
+  }
 
   return (
     <Card
       className={classes.post}
-      variant="outlined"
     >
-      <CardHeader
-        action={
-          <IconButton onClick={() => onDelete(data._id)}>
-            <Icon>delete</Icon>
+      <CardMedia
+        className={classes.media}
+        image={data.image || imagePlaceholder}
+      >
+        <div className={classes.actions}>
+          <IconButton onClick={handleDeleteClick}>
+            <Icon fontSize="small">delete</Icon>
           </IconButton>
-        }
-        className={classes.cardHeaderRoot}
-        subheader="September 14, 2016"
-      />
-      <CardActionArea>
-        <CardMedia
-          className={classes.media}
-          image={data.image || imagePlaceholder}
-          title="Contemplative Reptile"
-        />
+        </div>
+      </CardMedia>
+      <CardActionArea onClick={() => console.log("View Post")}>
         <CardContent>
           <Typography
             gutterBottom

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import FileBase64 from 'react-file-base64';
 import React, { useEffect, useState } from 'react';
-import { BASE_URI } from '../utils/constants';
+import { BASE_URI } from '../../utils/constants';
 
 const useStyles = makeStyles({
   title: {
@@ -56,7 +56,10 @@ const CreatePostDialog = (props) => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success:', data);
+      console.log("Success");
+    })
+    .catch(err => {
+      console.error(err);
     });
     onClose(true);
   }
@@ -96,18 +99,18 @@ const CreatePostDialog = (props) => {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={onClose}
-          color="primary"
-        >
-          Close
-        </Button>
-        <Button
           onClick={createPost}
           color="primary"
           variant="contained"
           autoFocus
         >
           Create
+        </Button>
+        <Button
+          onClick={onClose}
+          color="primary"
+        >
+          Close
         </Button>
       </DialogActions>
     </Dialog>
