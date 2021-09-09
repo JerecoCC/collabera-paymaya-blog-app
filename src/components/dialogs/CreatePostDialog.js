@@ -10,6 +10,8 @@ import {
 import FileBase64 from 'react-file-base64';
 import React, { useEffect, useState } from 'react';
 import { BASE_URI } from '../../utils/constants';
+import { useDispatch } from 'react-redux';
+import { shouldUpdateList } from '../../redux/actions/postAction';
 
 const useStyles = makeStyles({
   title: {
@@ -17,7 +19,7 @@ const useStyles = makeStyles({
     marginBottom: 10
   },
   root: {
-    minHeight: 325,
+    minHeight: 280,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'start'
@@ -30,38 +32,87 @@ const CreatePostDialog = (props) => {
     open
   } = props;
 
-  const [image, setImage] = useState("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [formData, setFormData] = useState({
+    image: "",
+    title: "",
+    content: "",
+  });
+  const [errors, setErrors] = useState({
+    image: "",
+    title: "",
+    content: "",
+  });
 
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if(!open) {
-      setImage("");
-      setTitle("");
-      setContent("");
+      setFormData({
+        image: "",
+        title: "",
+        content: "",
+      });
+      setErrors({
+        image: "",
+        title: "",
+        content: "",
+      });
     }
   }, [open]);
 
+  const setInputData = (name, data) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: data,
+    }));
+  }
+
+  const setErrorMessages = (name, error) => {
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+  }
+
+  const validate = () => {
+    let hasError = false;
+    if(!formData.title.trim()) {
+      setErrorMessages("title", "Title is required");
+      hasError = true;
+    }
+    if(!formData.content.trim()) {
+      setErrorMessages("content", "Content is required");
+      hasError = true;
+    }
+
+    return !hasError;
+  }
+
   const createPost = () => {
-    const post = {title, content, image};
-    fetch(`${BASE_URI}/post`, {
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(post)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Success");
-    })
-    .catch(err => {
-      console.error(err);
-    });
-    onClose(true);
+    if(validate()) {
+      const post = {
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        image: formData.image,
+      }
+      fetch(`${BASE_URI}/post`, {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(post)
+      })
+      .then(response => response.json())
+      .then(data => {
+        dispatch(shouldUpdateList(true));
+      })
+      .catch(err => {
+        console.error(err);
+      });
+      onClose(true);
+    }
   }
 
   return (
@@ -76,25 +127,32 @@ const CreatePostDialog = (props) => {
         <FileBase64
           type="image"
           multiple={false}
-          onDone={({base64}) => setImage(base64)}
+          onDone={({base64}) => setInputData("image", base64)}
         />
         <TextField
+          error={!!errors?.title}
+          helperText={errors?.title}
           id="postTitleInput"
           label="Title"
           className={classes.title}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={formData.title}
+          onChange={(e) => setInputData("title", e.target.value)}
           fullWidth
+          required
         />
         <TextField
+          error={!!errors?.content}
+          helperText={errors?.content}
           id="postContentInput"
+          label="Content"
           placeholder="Place content here..."
           InputProps={{className: classes.root}}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          value={formData.content}
+          onChange={(e) => setInputData("content", e.target.value)}
           variant="outlined"
           fullWidth
           multiline
+          required
         />
       </DialogContent>
       <DialogActions>
@@ -106,10 +164,7 @@ const CreatePostDialog = (props) => {
         >
           Create
         </Button>
-        <Button
-          onClick={onClose}
-          color="primary"
-        >
+        <Button onClick={onClose}>
           Close
         </Button>
       </DialogActions>

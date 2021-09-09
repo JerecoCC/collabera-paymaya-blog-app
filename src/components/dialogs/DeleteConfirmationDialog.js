@@ -31,7 +31,6 @@ const DeleteConfirmationDialog = (props) => {
       <DialogActions>
         <Button
           onClick={onClose}
-          color="primary"
         >
           Close
         </Button>
