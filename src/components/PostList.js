@@ -106,7 +106,6 @@ const PostList = () => {
       <div className={classes.header}>
         <KeywordSearch />
         <FormControl
-          variant="outlined"
           className={classes.formControl}
           size="small"
         >
@@ -131,9 +130,11 @@ const PostList = () => {
           <Post key={index} data={item} />
         ))}
       </div>
-      <div className={classes.pagination}>
-        <Pagination count={pages} onChange={handlePageChange} />
-      </div>
+      {pages > 1 &&
+        <div className={classes.pagination}>
+          <Pagination count={pages} onChange={handlePageChange} />
+        </div>
+      }
     </React.Fragment>
   );
 };

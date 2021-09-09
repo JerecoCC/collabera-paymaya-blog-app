@@ -67,23 +67,22 @@ const Post = (props) => {
 
   return (
     <Card className={classes.post}>
+      <div className={classes.actions}>
+        <Tooltip title="Edit Post">
+          <IconButton onClick={handleEditClick}>
+            <Icon fontSize="small">edit</Icon>
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete Post">
+          <IconButton onClick={handleDeleteClick}>
+            <Icon fontSize="small" color="secondary">delete</Icon>
+          </IconButton>
+        </Tooltip>
+      </div>
       <CardMedia
         className={classes.media}
         image={data.image || imagePlaceholder}
-      >
-        <div className={classes.actions}>
-          <Tooltip title="Edit Post">
-            <IconButton onClick={handleEditClick}>
-              <Icon fontSize="small">edit</Icon>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete Post">
-            <IconButton onClick={handleDeleteClick}>
-              <Icon fontSize="small" color="secondary">delete</Icon>
-            </IconButton>
-          </Tooltip>
-        </div>
-      </CardMedia>
+      />
       <Tooltip title="View Post">
         <CardActionArea onClick={handleClick}>
           <CardContent>
