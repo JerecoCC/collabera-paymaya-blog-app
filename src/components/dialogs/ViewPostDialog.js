@@ -82,9 +82,11 @@ const ViewPostDialog = (props) => {
             <Icon fontSize="small">arrow_back</Icon>
           </IconButton>
         </Tooltip>
-        <Typography className={classes.date}>
-          <Moment date={post?.dateCreated} format="MMM DD, YYYY hh:mm a"/>
-        </Typography>
+        {post &&
+          <Typography className={classes.date}>
+            <Moment date={post?.dateCreated} format="MMM DD, YYYY hh:mm a"/>
+          </Typography>
+        }
       </div>
       <DialogContent>
         <div className={classes.post}>

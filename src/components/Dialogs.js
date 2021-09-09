@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { closeDialog } from '../redux/actions/dialogAction';
 import { DIALOGS } from '../utils/constants';
-import CreatePostDialog from './dialogs/CreatePostDialog';
+import CreateEditPostDialog from './dialogs/CreateEditPostDialog';
 import DeleteConfirmationDialog from './dialogs/DeleteConfirmationDialog';
 import ViewPostDialog from './dialogs/ViewPostDialog';
 
@@ -20,8 +20,8 @@ const Dialogs = () => {
 
   return (
     <React.Fragment>
-      <CreatePostDialog
-        open={shouldOpen(DIALOGS.CREATE_POST)}
+      <CreateEditPostDialog
+        open={shouldOpen(DIALOGS.CREATE_POST) || shouldOpen(DIALOGS.EDIT_POST)}
         onClose={onClose}
       />
       <DeleteConfirmationDialog

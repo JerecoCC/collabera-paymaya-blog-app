@@ -55,6 +55,11 @@ const Post = (props) => {
     dispatch(openDialog(DIALOGS.DELETE_POST));
   };
 
+  const handleEditClick = () => {
+    dispatch(setSelected(data._id));
+    dispatch(openDialog(DIALOGS.EDIT_POST));
+  };
+ 
   const handleClick = () => {
     dispatch(setSelected(data._id));
     dispatch(openDialog(DIALOGS.VIEW_POST));
@@ -67,9 +72,14 @@ const Post = (props) => {
         image={data.image || imagePlaceholder}
       >
         <div className={classes.actions}>
+          <Tooltip title="Edit Post">
+            <IconButton onClick={handleEditClick}>
+              <Icon fontSize="small">edit</Icon>
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Delete Post">
             <IconButton onClick={handleDeleteClick}>
-              <Icon fontSize="small">delete</Icon>
+              <Icon fontSize="small" color="secondary">delete</Icon>
             </IconButton>
           </Tooltip>
         </div>

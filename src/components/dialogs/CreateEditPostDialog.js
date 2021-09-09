@@ -9,9 +9,10 @@ import {
 } from '@material-ui/core';
 import FileBase64 from 'react-file-base64';
 import React, { useEffect, useState } from 'react';
-import { BASE_URI } from '../../utils/constants';
-import { useDispatch } from 'react-redux';
+import { BASE_URI, DIALOGS } from '../../utils/constants';
+import { useDispatch, useSelector } from 'react-redux';
 import { shouldUpdateList } from '../../redux/actions/postAction';
+import imagePlaceholder from "../../assets/image-placeholder.png";
 
 const useStyles = makeStyles({
   title: {
@@ -24,9 +25,19 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     justifyContent: 'start'
   },
+  image: {
+    display: "flex",
+    alignItems: "center",
+  },
+  imagePreview: {
+    width: 50,
+    height: 25,
+    objectFit: "cover",
+    marginRight: 10,
+  },
 })
 
-const CreatePostDialog = (props) => {
+const CreateEditPostDialog = (props) => {
   const {
     onClose,
     open
@@ -43,11 +54,29 @@ const CreatePostDialog = (props) => {
     content: "",
   });
 
+  const mode = useSelector(state => state.dialog.name);
+  const selectedId = useSelector(state => state.post.selectedId);
   const classes = useStyles();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!open) {
+    if(open) {
+      if(DIALOGS.EDIT_POST === mode) {
+        fetch(`${BASE_URI}/post/${selectedId}`)
+          .then(res => res.json())
+          .then(res => {
+            setFormData((prev) => ({
+              ...prev,
+              title: res.title,
+              content: res.content,
+              image: res.image,
+            }));
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    } else {
       setFormData({
         image: "",
         title: "",
@@ -96,8 +125,9 @@ const CreatePostDialog = (props) => {
         content: formData.content.trim(),
         image: formData.image,
       }
-      fetch(`${BASE_URI}/post`, {
-        method: "POST",
+      const uri = `${BASE_URI}/post${DIALOGS.EDIT_POST === mode ? `/${selectedId}` : ""}`
+      fetch(uri, {
+        method: DIALOGS.EDIT_POST === mode ? "PATCH" : "POST",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -115,6 +145,10 @@ const CreatePostDialog = (props) => {
     }
   }
 
+  const getLabel = () => {
+    return DIALOGS.CREATE_POST === mode ? "Create" : "Edit";
+  }
+
   return (
     <Dialog
       open={open}
@@ -122,13 +156,20 @@ const CreatePostDialog = (props) => {
       maxWidth="md"
       fullWidth
     >
-      <DialogTitle>Create Post</DialogTitle>
+      <DialogTitle>{getLabel()} Post</DialogTitle>
       <DialogContent>
-        <FileBase64
-          type="image"
-          multiple={false}
-          onDone={({base64}) => setInputData("image", base64)}
-        />
+        <div className={classes.image}>
+          <img
+            className={classes.imagePreview}
+            src={formData.image || imagePlaceholder}
+            alt="Preview"
+          />
+          <FileBase64
+            type="image"
+            multiple={false}
+            onDone={({base64}) => setInputData("image", base64)}
+          />
+        </div>
         <TextField
           error={!!errors?.title}
           helperText={errors?.title}
@@ -162,7 +203,7 @@ const CreatePostDialog = (props) => {
           variant="contained"
           autoFocus
         >
-          Create
+          {getLabel()}
         </Button>
         <Button onClick={onClose}>
           Close
@@ -172,4 +213,4 @@ const CreatePostDialog = (props) => {
   )
 }
 
-export default CreatePostDialog;
+export default CreateEditPostDialog;
