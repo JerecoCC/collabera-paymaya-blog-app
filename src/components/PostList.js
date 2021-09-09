@@ -1,4 +1,5 @@
 import { Backdrop, CircularProgress, makeStyles } from '@material-ui/core';
+import { Pagination } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { shouldUpdateList } from '../redux/actions/postAction';
@@ -22,11 +23,18 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       gridTemplateColumns: "repeat(3, 1fr)"
     },
+  },
+  pagination: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: 10,
   }
 }));
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
+  const [pages, setPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const shouldUpdate = useSelector(state => state.post.updateList);
   const dispatch = useDispatch();
@@ -46,11 +54,12 @@ const PostList = () => {
 
   const getPosts = () => {
     setLoading(true);
-    fetch(`${BASE_URI}/post`)
+    fetch(`${BASE_URI}/post?page=${currentPage}&perPage=${3}`)
       .then(res => res.json())
       .then(res => {
         dispatch(shouldUpdateList(false));
-        setPosts(res);
+        setPosts(res.posts);
+        setPages(res.pages);
         setLoading(false);
       })
       .catch((err) => {
@@ -59,18 +68,28 @@ const PostList = () => {
       });
   }
 
+  const handlePageChange = (e, value) => {
+    setCurrentPage(value);
+    dispatch(shouldUpdateList(true));
+  }
+
   return (
-    <div className={classes.postList}>
-      <Backdrop open={isLoading} className={classes.backdrop}>
-        <CircularProgress color="primary" />
-      </Backdrop>
-      {posts.map((item, index) => (
-        <Post
-          key={index}
-          data={item}
-        />
-      ))}
-    </div>
+    <React.Fragment>
+      <div className={classes.postList}>
+        <Backdrop open={isLoading} className={classes.backdrop}>
+          <CircularProgress color="primary" />
+        </Backdrop>
+        {posts.map((item, index) => (
+          <Post
+            key={index}
+            data={item}
+          />
+        ))}
+      </div>
+      <div className={classes.pagination}>
+        <Pagination count={pages} onChange={handlePageChange} />
+      </div>
+    </React.Fragment>
   );
 }
 
